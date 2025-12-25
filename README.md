@@ -1,6 +1,6 @@
 # NeuroCalm
 
-[**Try the NeuroCalm App**](https://ai.studio/apps/drive/1pbRdM1goB99kK05-jNHaSU-6i8YSIzFM?fullscreenApplet=true)
+NeuroCalm is a stateless, privacy-first AI tool powered by Gemini 3 that turns complex text, images, and video into calm, structured clarity. Try the live demo: https://ai.studio/apps/drive/1pbRdM1goB99kK05-jNHaSU-6i8YSIzFM?fullscreenApplet=true
 
 ## Product Overview
 
