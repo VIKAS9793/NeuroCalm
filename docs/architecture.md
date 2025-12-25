@@ -11,7 +11,7 @@ The architecture is centered around three core concepts:
 2.  A dedicated service layer to encapsulate all interactions with the Gemini API.
 3.  Strict, schema-driven data models to ensure predictable and safe rendering of AI-generated content.
 
-*(See `docs/diagrams/architecture.mmd` for a component diagram.)*
+*(See the [Architecture Diagram](../assets/NeuroCalm-Architecture.png) for a visual overview.)*
 
 ## Component Breakdown
 
@@ -38,7 +38,7 @@ The architecture is centered around three core concepts:
 *   **Crisis Detection:** A client-side check (`checkForCrisis` method in `AppComponent`) scans text input for high-risk keywords. If detected, it bypasses the AI and displays a supportive redirection message.
 *   **Uncertainty Handling:** The system prompt explicitly instructs the Gemini model to report any ambiguity in the source material. This is captured in the `uncertaintyNote` field of the response schema and displayed clearly to the user.
 
-*(See `docs/diagrams/data-flow.mmd` for a data flow visualization.)*
+*(See the [Logic Flow Diagram](../assets/NeuroCalm-Logicflow.png) for a data flow visualization.)*
 
 ## Multimodal Processing Flow
 
@@ -50,7 +50,7 @@ Processing non-text inputs follows a clear, client-side flow:
 5.  This string is included as an `inlineData` part in the `generateContent` request to the Gemini API, alongside the text prompt.
 6.  The Gemini model processes the multimodal input and returns a structured JSON response.
 
-*(See `docs/diagrams/multimodal-flow.mmd` for a detailed flow diagram.)*
+*(See the [Product Vision](../assets/NeuroCalm-Product%20vision.png) for more context.)*
 
 ## Stateless Design Explanation
 
