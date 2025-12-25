@@ -1,0 +1,24 @@
+Create a user-friendly logic flow diagram for the "NeuroCalm" application.
+
+Style:
+- Minimalist flowchart style.
+- Use a calm, accessible color palette (light blues, slate grey, white).
+- Use simple icons and minimal text inside rounded rectangle nodes.
+- Use diamond shapes for decisions.
+- Keep connectors clean and straight.
+- No people or decorative elements.
+- High-resolution for documentation.
+- Aspect Ratio: 16:9
+
+Layout:
+- A clear top-to-bottom or left-to-right flow.
+- 1. Start node: "User Input" with icons for Text, Image, and Video.
+- 2. Next node: "Select Support Style".
+- 3. Decision diamond: "Crisis Language Detected?".
+- 4a. (Yes path from diamond): Node labeled "Display Supportive Message". This path ends here.
+- 4b. (No path from diamond): Node labeled "Construct Prompt (with Schema)".
+- 5. Next node: "Send to Gemini API".
+- 6. Final node: "Display Structured Output" showing a simple UI card with a title, key points, and a checklist.
+
+Purpose:
+To visually explain the step-by-step process of how user input is handled, checked for safety, and transformed into a structured output.

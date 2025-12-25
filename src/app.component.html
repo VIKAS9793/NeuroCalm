@@ -1,0 +1,190 @@
+
+<main class="container mx-auto px-4 py-8 md:py-12">
+  <header class="text-center mb-8 md:mb-12">
+    <h1 class="text-3xl md:text-4xl font-bold text-slate-900">NeuroCalm</h1>
+    <p class="mt-2 text-lg text-slate-600">A multimodal cognitive accessibility layer for calmer, clearer information.</p>
+  </header>
+
+  @if (!isApiKeyConfigured()) {
+    <div class="max-w-2xl mx-auto bg-red-100 border-l-4 border-red-500 text-red-800 p-4 rounded-md" role="alert">
+      <p class="font-bold">Configuration Error</p>
+      <p>The application is missing the required API key to connect to the Gemini service. Please ensure it is configured correctly.</p>
+    </div>
+  }
+
+  @if (isCrisisDetected()) {
+    <div class="max-w-2xl mx-auto bg-amber-50 border-l-4 border-amber-500 text-amber-900 p-6 rounded-md shadow-sm" role="alert">
+      <h2 class="text-xl font-semibold mb-3">Support is available</h2>
+      <p class="mb-4">It looks like you’re going through a hard time. This tool isn't designed for crisis support, but what you're feeling matters.</p>
+      
+      <p class="font-semibold mb-2">If you need someone to talk to, you don't have to go through this alone:</p>
+      <ul class="list-disc list-inside space-y-2 mb-4">
+        <li>Reach out to a trusted person.</li>
+        <li>Contact a mental health professional.</li>
+        <li>For immediate help in the US, call or text the Suicide & Crisis Lifeline at <strong class="font-bold">988</strong>.</li>
+      </ul>
+
+      <p class="text-sm">You can reset the application to continue using it for other text.</p>
+      <button (click)="reset()" class="mt-4 px-6 py-2 border border-amber-300 text-base font-medium rounded-md text-amber-800 bg-amber-100 hover:bg-amber-200 transition-colors duration-200">
+        Reset
+      </button>
+    </div>
+  } @else {
+    <div class="max-w-screen-lg mx-auto">
+      <div class="bg-white p-6 md:p-8 rounded-lg shadow-sm border border-slate-200">
+        <div class="flex flex-col space-y-6">
+          
+          <!-- Input Mode Switcher -->
+          <div class="flex justify-center">
+            <div class="inline-flex rounded-lg border border-slate-200 bg-slate-100 p-1">
+              <button (click)="setInputMode('text')" [disabled]="isLoading()"
+                      class="px-4 py-1.5 text-sm font-semibold rounded-md transition-colors"
+                      [class.bg-white]="inputMode() === 'text'" [class.text-slate-800]="inputMode() === 'text'"
+                      [class.text-slate-500]="inputMode() !== 'text'" [class.hover:bg-slate-200]="inputMode() !== 'text'">
+                Text
+              </button>
+              <button (click)="setInputMode('image')" [disabled]="isLoading()"
+                      class="px-4 py-1.5 text-sm font-semibold rounded-md transition-colors"
+                      [class.bg-white]="inputMode() === 'image'" [class.text-slate-800]="inputMode() === 'image'"
+                      [class.text-slate-500]="inputMode() !== 'image'" [class.hover:bg-slate-200]="inputMode() !== 'image'">
+                Image
+              </button>
+              <button (click)="setInputMode('video')" [disabled]="isLoading()"
+                      class="px-4 py-1.5 text-sm font-semibold rounded-md transition-colors"
+                      [class.bg-white]="inputMode() === 'video'" [class.text-slate-800]="inputMode() === 'video'"
+                      [class.text-slate-500]="inputMode() !== 'video'" [class.hover:bg-slate-200]="inputMode() !== 'video'">
+                Video
+              </button>
+            </div>
+          </div>
+
+          @if (inputMode() === 'text') {
+            <div>
+              <label for="userInput" class="block text-lg font-medium text-slate-700">Enter text or a public URL</label>
+              <p class="text-sm text-slate-600 mt-1 mb-3">Paste any text that feels overwhelming, and we'll help make it clearer.</p>
+              <textarea id="userInput" name="userInput" rows="8" [ngModel]="userInput()" (ngModelChange)="userInput.set($event)" placeholder="Paste your text here..." class="w-full p-4 border-2 border-slate-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-colors duration-150 ease-in-out text-base" [disabled]="isLoading()"></textarea>
+            </div>
+          } @else if (inputMode() === 'image') {
+            <div>
+              <label for="imageUpload" class="block text-lg font-medium text-slate-700">Upload an image</label>
+              <p class="text-sm text-slate-600 mt-1 mb-3">Upload a form, screenshot, or handwritten note to get a structured explanation.</p>
+              @if (!imagePreviewUrl()) {
+                <div (click)="fileInput.click()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)"
+                     class="mt-2 flex justify-center rounded-lg border-2 border-dashed border-slate-300 px-6 py-10 cursor-pointer hover:border-blue-500 transition-colors"
+                     [class.border-blue-500]="isDragging()" [class.bg-blue-50]="isDragging()">
+                  <div class="text-center">
+                    <svg class="mx-auto h-12 w-12 text-slate-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                    <p class="mt-4 text-sm leading-6 text-slate-600"><span class="font-semibold text-blue-600">Click to upload</span> or drag and drop</p>
+                    <p class="text-xs text-slate-500">PNG, JPG, GIF, WEBP</p>
+                    <input #fileInput id="imageUpload" name="imageUpload" type="file" class="sr-only" accept="image/*,video/*" (change)="onFileSelected($event)">
+                  </div>
+                </div>
+              } @else {
+                <div class="mt-2 relative">
+                  <img [src]="imagePreviewUrl()" alt="Image preview" class="w-full max-h-96 object-contain rounded-lg border-2 border-slate-300"/>
+                  <button (click)="removeImage()" class="absolute top-2 right-2 bg-white/70 rounded-full p-1 text-slate-700 hover:bg-white hover:text-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" aria-label="Remove image">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+              }
+              <div class="mt-4">
+                <label for="imagePrompt" class="block text-sm font-medium text-slate-700">Optional: add a question about the image</label>
+                <textarea id="imagePrompt" name="imagePrompt" rows="2" [ngModel]="userInput()" (ngModelChange)="userInput.set($event)" placeholder="e.g., What's the most important part of this notice?" class="mt-1 w-full p-2 border-2 border-slate-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-colors text-base" [disabled]="isLoading()"></textarea>
+              </div>
+            </div>
+          } @else if (inputMode() === 'video') {
+             <div>
+              <label class="block text-lg font-medium text-slate-700">Upload a video</label>
+              <p class="text-sm text-slate-600 mt-1 mb-3">Upload a short video to decompose it into steps or a summary.</p>
+              
+              @if (!videoPreviewUrl()) {
+                <div (click)="fileInput.click()" (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (drop)="onDrop($event)"
+                    class="mt-2 flex justify-center rounded-lg border-2 border-dashed border-slate-300 px-6 py-10 cursor-pointer hover:border-blue-500 transition-colors"
+                    [class.border-blue-500]="isDragging()" [class.bg-blue-50]="isDragging()">
+                  <div class="text-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 010 .656l-5.603 3.113a.375.375 0 01-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112z" />
+                    </svg>
+                    <p class="mt-4 text-sm leading-6 text-slate-600"><span class="font-semibold text-blue-600">Click to upload</span> or drag and drop</p>
+                    <p class="text-xs text-slate-500">MP4, MOV, WEBM, etc.</p>
+                    <input #fileInput id="videoUpload" name="videoUpload" type="file" class="sr-only" accept="video/*,image/*" (change)="onFileSelected($event)">
+                  </div>
+                </div>
+              } @else {
+                <div class="mt-2 relative">
+                  <video [src]="videoPreviewUrl()" class="w-full max-h-96 object-contain rounded-lg border-2 border-slate-300 bg-black" controls muted playsinline></video>
+                  <button (click)="removeVideo()" class="absolute top-2 right-2 bg-black/50 rounded-full p-1 text-white hover:bg-black transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" aria-label="Remove video">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+              }
+
+              <div class="mt-4">
+                <label for="videoPrompt" class="block text-sm font-medium text-slate-700">Optional: add a question about the video</label>
+                <textarea id="videoPrompt" name="videoPrompt" rows="2" [ngModel]="userInput()" (ngModelChange)="userInput.set($event)" placeholder="e.g., What are the main steps in this tutorial?" class="mt-1 w-full p-2 border-2 border-slate-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-colors text-base" [disabled]="isLoading()"></textarea>
+              </div>
+            </div>
+          }
+          
+          <p class="text-sm text-slate-500">
+            <span class="font-semibold">Privacy first:</span> Your information stays with you. This session does not save or remember anything.
+          </p>
+          
+          <div>
+            <h3 class="text-lg font-medium text-slate-700 mb-3">Choose a support style</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              @for(style of supportStyles; track style.id) {
+                <button (click)="selectStyle(style.id)" [disabled]="isLoading()" class="text-left p-4 border-2 rounded-lg transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" [class.bg-blue-100]="selectedStyle() === style.id" [class.border-blue-500]="selectedStyle() === style.id" [class.text-blue-800]="selectedStyle() === style.id" [class.bg-white]="selectedStyle() !== style.id" [class.border-slate-300]="selectedStyle() !== style.id" [class.hover:border-slate-400]="selectedStyle() !== style.id && !isLoading()" [class.hover:bg-slate-50]="selectedStyle() !== style.id && !isLoading()" [class.cursor-not-allowed]="isLoading()" [class.opacity-60]="isLoading()">
+                  <div class="font-semibold">{{ style.label }}</div>
+                  <div class="text-sm" [class.text-blue-700]="selectedStyle() === style.id" [class.text-slate-500]="selectedStyle() !== style.id">{{ style.description }}</div>
+                </button>
+              }
+            </div>
+          </div>
+
+          <div>
+            <h3 class="text-lg font-medium text-slate-700 mb-3">Explanation Level</h3>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-2 rounded-lg border border-slate-200 bg-slate-100 p-1 w-full sm:w-auto">
+              @for(level of explanationLevels; track level.id) {
+                <button (click)="explanationLevel.set(level.id)" [disabled]="isLoading()"
+                        class="w-full sm:w-auto px-4 py-1.5 text-sm font-semibold rounded-md transition-colors"
+                        [class.bg-white]="explanationLevel() === level.id" [class.text-slate-800]="explanationLevel() === level.id"
+                        [class.text-slate-500]="explanationLevel() !== level.id" [class.hover:bg-slate-200]="explanationLevel() !== level.id">
+                  {{ level.label }}
+                </button>
+              }
+            </div>
+          </div>
+          
+          <div class="flex flex-col sm:flex-row items-center gap-4 pt-4 border-t border-slate-200">
+            <button (click)="processInput()" [disabled]="!canProcess() || !isApiKeyConfigured()" class="w-full sm:w-auto flex items-center justify-center px-6 py-3 border border-transparent text-base font-semibold rounded-lg text-white bg-blue-600 hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              @if (isLoading()) {
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                <span>Processing...</span>
+              } @else {
+                <span>Process {{ inputMode().charAt(0).toUpperCase() + inputMode().slice(1) }}</span>
+              }
+            </button>
+            <button (click)="reset()" [disabled]="isLoading()" class="w-full sm:w-auto px-6 py-3 border border-slate-300 text-base font-medium rounded-lg text-slate-700 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    @if (error()) {
+      <div class="mt-8 max-w-2xl mx-auto bg-red-100 border border-red-200 text-red-800 px-4 py-3 rounded-lg relative" role="alert">
+        <p>
+          <strong class="font-bold">I wasn't able to process that.</strong>
+          <span class="block sm:inline sm:ml-2">{{ error() }}</span>
+        </p>
+      </div>
+    }
+
+    <div class="mt-8 md:mt-12">
+      <app-output-display [data]="processedOutput()"></app-output-display>
+    </div>
+  }
+</main>

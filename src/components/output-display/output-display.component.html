@@ -1,0 +1,136 @@
+
+@if (data(); as output) {
+  <div class="w-full max-w-2xl mx-auto bg-white p-6 md:p-8 rounded-lg shadow-sm border border-slate-200 animate-fade-in">
+    
+    @if (output.uncertaintyNote) {
+      <div class="mb-6 bg-blue-50 border-l-4 border-blue-400 text-blue-800 p-4 rounded-md" role="note">
+        <div class="flex">
+          <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+            </svg>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm">{{ output.uncertaintyNote }}</p>
+          </div>
+        </div>
+      </div>
+    }
+
+    <div class="flex items-center justify-between mb-6 gap-4">
+      <h2 class="text-2xl font-semibold text-slate-800">{{ output.title }}</h2>
+      <div class="flex items-center gap-2 flex-shrink-0">
+        <button (click)="changePlaybackRate()" class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" title="Change playback speed">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>{{ playbackRate() }}x</span>
+        </button>
+        <button (click)="toggleAudio()" class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          @switch (playbackState()) {
+            @case ('playing') {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" /></svg>
+              <span>Pause</span>
+            }
+            @case ('paused') {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" /></svg>
+              <span>Resume</span>
+            }
+            @case ('stopped') {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" /></svg>
+              <span>Read aloud</span>
+            }
+          }
+        </button>
+        <button (click)="copyToClipboard()" class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+          <span>{{ copyButtonText() }}</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="space-y-6">
+      
+      @if(output.summary) {
+        <div>
+          <h3 class="text-lg font-semibold text-blue-800 mb-2">Overview</h3>
+          <p class="text-slate-700">{{ output.summary }}</p>
+        </div>
+      }
+
+      @if (output.explanation) {
+        <div class="border-t border-slate-200 pt-5">
+          <h3 class="text-lg font-semibold text-blue-800 mb-2">Explanation</h3>
+          <p class="text-slate-700 bg-slate-50 p-4 rounded-lg">{{ output.explanation }}</p>
+        </div>
+      }
+
+      <div class="border-t border-slate-200 pt-5">
+        <h3 class="text-lg font-semibold text-blue-800 mb-2">Key Points</h3>
+        <ul class="space-y-2 list-disc list-inside text-slate-700">
+          @for (point of output.keyPoints; track point) {
+            <li>{{ point }}</li>
+          }
+        </ul>
+      </div>
+
+      @if (output.requirements && output.requirements.length > 0) {
+        <div class="border-t border-slate-200 pt-5">
+          <h3 class="text-lg font-semibold text-blue-800 mb-2">What you may need</h3>
+          <ul class="space-y-2 list-disc list-inside text-slate-700">
+            @for (req of output.requirements; track req) {
+              <li>{{ req }}</li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (output.steps && output.steps.length > 0) {
+        <div class="border-t border-slate-200 pt-5">
+          <h3 class="text-lg font-semibold text-blue-800 mb-3">Step-by-Step</h3>
+          <div class="space-y-3">
+            @for (step of output.steps; track $index) {
+              <div class="flex items-start">
+                <input 
+                  type="checkbox" 
+                  id="step-checkbox-{{$index}}" 
+                  [checked]="step.completed"
+                  (change)="toggleStep($index)"
+                  class="h-5 w-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 mt-0.5 cursor-pointer"
+                />
+                <label 
+                  id="step-label-{{$index}}"
+                  for="step-checkbox-{{$index}}" 
+                  class="ml-3 text-slate-700 cursor-pointer transition-colors"
+                >
+                  {{ step.text }}
+                </label>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (output.nextStep) {
+        <div class="border-t border-slate-200 pt-5">
+          <h3 class="text-lg font-semibold text-blue-800 mb-2">Optional Next Step</h3>
+          <p class="text-slate-700 bg-slate-100 p-4 rounded-lg">{{ output.nextStep }}</p>
+        </div>
+      }
+
+    </div>
+
+  </div>
+} @else {
+  <div class="w-full max-w-2xl mx-auto text-center py-10">
+      <div class="flex flex-col items-center justify-center p-6 md:p-8 rounded-lg bg-slate-100 border border-slate-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-slate-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+        <p class="text-slate-600">Your processed text will appear here.</p>
+        <p class="text-sm text-slate-500 mt-1">Enter some text or an image above and choose a style to begin.</p>
+      </div>
+  </div>
+}

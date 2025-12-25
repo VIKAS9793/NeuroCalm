@@ -1,0 +1,20 @@
+Create a clean, professional architecture diagram for a web application called "NeuroCalm".
+
+Style:
+- Minimalist, flat design aesthetic.
+- Soft, calm, and accessible color palette (light blues, greys, white).
+- Use rounded rectangles for components and simple, thin lines for connectors.
+- Subtle shadows for depth.
+- No people, faces, or decorative clutter.
+- High-resolution for presentations.
+- Aspect Ratio: 16:9
+
+Layout:
+- A large rounded rectangle labeled "User's Browser (Client-Side Only)" should contain all internal components.
+- Inside, show three main blocks: "Angular UI" (with icons for text fields and buttons), "State Management (Signals)", and "Gemini Service (API Logic)".
+- An arrow should flow from "Angular UI" to "Gemini Service".
+- An arrow should flow from "Gemini Service" out of the "User's Browser" container to an external block labeled "Google Gemini API".
+- A prominent label at the bottom should read: "Stateless Design: No Server, No Database, No Data Stored".
+
+Purpose:
+To visually explain the client-side, stateless architecture of the application to a semi-technical audience.
