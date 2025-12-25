@@ -1,5 +1,7 @@
 # NeuroCalm
 
+[**Try the NeuroCalm App**](https://ai.studio/apps/drive/1pbRdM1goB99kK05-jNHaSU-6i8YSIzFM?fullscreenApplet=true)
+
 ## Product Overview
 
 NeuroCalm is a cognitive accessibility layer designed to help people interact with complex information in calmer, clearer ways. It uses generative AI to transform potentially overwhelming text, images, or videos into structured, predictable, and easy-to-process formats. The application prioritizes user privacy and agency, operating on a session-only basis without storing any user data.
